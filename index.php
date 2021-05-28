@@ -1,29 +1,22 @@
 <?php
-    $servername = "localhost:8889";
-    $username = "root";
-    $password = "root";
-    $dbname = "db-hotel";
-    // Connect
+    require_once __DIR__. '/database.php';
 
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Check connection
-    if ($conn && $conn->connect_error) {
-    echo "Connection failed: " . $conn->connect_error;
-    die();
-    }
-
-    $sql = "SELECT * FROM stanze";
+    $sql = 
+    "SELECT *
+     FROM prenotazioni_has_ospiti
+     INNER JOIN stanze
+     ON stanze.id = prenotazioni_has_ospiti.id";
     $result = $conn->query($sql);
 
+    $rooms = [];
+
     if ($result && $result->num_rows > 0) {
-        
-    // output data of each row
-        while($row = $result->fetch_assoc()) {
-            //echo "Stanza N. ". $row['room_number']. " piano: ".$row['floor']."<br>";
+
+        while ($row = $result->fetch_assoc()) {
             $rooms[] = $row;
         }
-    } 
+
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,17 +24,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
     <title>Document</title>
 </head>
 <body>
-    <h1>stanze</h1>
-    <ul>
+
+    <h1 class="title">lista stanze</h1>
+    <ul class="rooms">
         <?php foreach($rooms as $room) {?>
 
-            <li>
-                piano: <?php echo $room['floor']?><br>
-                stanza numero: <?php echo $room['room_number']?><br>
-                numero letti: <?php echo $room['beds']?><br>
+            <li class="room">
+                <span>
+                    numero stanza:<?php echo $room['room_number'] ?>
+                </span>
+                
+                <span>
+                    piano:<?php echo $room['floor'] ?>
+                </span>
+
+                <span>
+                    <a href="query.php?id=<?php echo $room['ospite_id'] ?>">Dettagli stanza</a>
+                </span>
             </li>
 
         <?php } ?>
